@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Copyright 2017 Google Inc
 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,14 +21,14 @@ import numpy as np
 # or a list of extensions. they should all be lowercase
 # but the . is important.
 def list_all_files(directory, extensions=None):
-    for root, dirnames, filenames in os.walk(directory):
-        for filename in filenames:
-            base, ext = os.path.splitext(filename)
-            joined = os.path.join(root, filename)
-            if extensions is None or ( len(ext) and ext.lower() in extensions ):
-                yield joined
-
-
+	for root, dirnames, filenames in os.walk(directory):
+		for filename in filenames:
+			base, ext = os.path.splitext(filename)
+			joined = os.path.join(root, filename)
+			if extensions is None or ( len(ext) and ext.lower() in extensions ):
+				yield joined
+				
+				
 def make_grid(res):
 	x, y = np.meshgrid(np.linspace(0, 1, res), np.linspace(0, 1, res))
 	x = x.reshape(-1)
@@ -42,9 +44,9 @@ def get_weights(xy):
 
 
 class hashabledict(dict):
-    def __hash__(self):
-        return hash(tuple(sorted(self.items())))
-
+	def __hash__(self):
+		return hash(tuple(sorted(self.items())))
+	
 	
 def get_description(combination, weights, pitch):
 	meta = {'pitch': pitch}
@@ -78,39 +80,40 @@ def get_filename(name):
 
 # susceptible to false onsets (brief burst before the real onset)
 def find_onset(audio, threshold_pct=0.1):
-    abs_audio = np.abs(audio)
-    threshold = threshold_pct * abs_audio.max()
-    onset = np.argmax(abs_audio > threshold)
-    return onset
+	abs_audio = np.abs(audio)
+	threshold = threshold_pct * abs_audio.max()
+	onset = np.argmax(abs_audio > threshold)
+	return onset
 
 def silence_ending(audio, max_value=3):
-    abs_audio = np.abs(audio)
-    offset = np.argmax(abs_audio[::-1] > max_value)
-    audio[-(1+offset):] = 0
-
+	abs_audio = np.abs(audio)
+	offset = np.argmax(abs_audio[::-1] > max_value)
+	audio[-(1+offset):] = 0
+	
 def fade_in(audio, samples=8):
-    audio[:samples] *= np.linspace(0, 1, samples)
-
+	audio[:samples] *= np.linspace(0, 1, samples)
+	
 def fade_out(audio, samples=8):
-    audio[-samples:] *= np.linspace(1, 0, samples)
-
+	audio[-samples:] *= np.linspace(1, 0, samples)
+	
 def post_process(audio, sr, onset_search=0.25, walk_onset_back=16, final_length=60000):
-    x = np.copy(audio).astype(np.float32)
-    onset_search_end = int(onset_search * sr)
-    onset = find_onset(x[:onset_search_end])
-    onset -= walk_onset_back
-    onset = max(onset, 0)
-    pre_xlen = len(x)
-    x = x[onset:] # crop starting at onset
-    x = x[:final_length] # crop to final length
-    
-    # fix erroneously shortened samples
-    if len(x) != 60000:
-            padding_amount = final_length - len(x)
-	    x = np.append(x, np.zeros(padding_amount))
-        
-    # silence_ending(x)
-    fade_in(x)
-    fade_out(x)
-    return x.astype(audio.dtype), onset
-
+	x = np.copy(audio).astype(np.float32)
+	onset_search_end = int(onset_search * sr)
+	onset = find_onset(x[:onset_search_end])
+	onset -= walk_onset_back
+	onset = max(onset, 0)
+	pre_xlen = len(x)
+	x = x[onset:] # crop starting at onset
+	x = x[:final_length] # crop to final length
+	
+	# fix erroneously shortened samples
+	if len(x)!=60000:
+		padding_amount = final_length - len(x)
+		
+		x = np.append(x, np.zeros(padding_amount))
+		
+		# silence_ending(x)
+	fade_in(x)
+	fade_out(x)
+	
+	return x.astype(audio.dtype), onset
