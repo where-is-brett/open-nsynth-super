@@ -24,4 +24,7 @@ with open('../settings.json', 'r') as infile:
 	settings = json.load(infile) 
 
 #	launch the process
-subprocess.call(["nsynth_save_embeddings", "--checkpoint_path=%s/magenta/models/nsynth/wavenet-ckpt/model.ckpt-200000" % settings['magenta_dir'], "--source_path=%s/audio_input" % source_dir, "--save_path=%s/embeddings_input" % source_dir, "--batch_size=64"])
+subprocess.call(["nsynth_save_embeddings", "--checkpoint_path=%s/magenta/models/nsynth/wavenet-ckpt/model.ckpt-200000" % settings['magenta_dir'], "--source_path=%s/audio_input" % source_dir, "--save_path=%s/embeddings_input" % source_dir, "--batch_size=128"])
+
+
+
