@@ -31,7 +31,6 @@ resolution = settings['resolution']
 final_length = settings['final_length']
 instrument_groups = [settings['pads']['NW'], settings['pads']['NE'], settings['pads']['SE'], settings['pads']['SW']]
 combinations = sorted(product(*instrument_groups))
-xy_grid = make_grid(resolution)
 
 
 #	cache all embeddings
@@ -59,7 +58,7 @@ all_embeddings = []
 for combination in tqdm(combinations):
 	for pitch in  pitches:
 		embeddings = np.asarray([get_embedding(instrument, pitch) for instrument in combination])
-		
+		xy_grid = make_grid(resolution)
 		for xy in xy_grid:
 			weights = get_weights(xy)
 			interpolated = (embeddings.T * weights).T.sum(axis=0)
